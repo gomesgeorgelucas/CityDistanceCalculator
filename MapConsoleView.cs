@@ -80,12 +80,35 @@ namespace CityDistanceCalculator
             return distance;
         }
 
-        public static void Run()
+        public static void Run(bool fromFile)
         {
             PrintHeader();
 
-            uint[,] map = GetMap();
-            uint[] routes = GetDistances((uint)map.GetLength(0));
+            uint[,] map;
+            uint[] routes;
+
+            if (fromFile)
+            {
+                try
+                {
+                    map = FileReader.GetMapFromDesktop("matriz.txt");
+                    ViewMap(map, (uint)map.GetLength(0));
+                    routes = FileReader.GetRoutesFromDesktop("caminho.txt");
+                    ViewRoutes(routes);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    Console.WriteLine("Error gettin map or routes from file, switching to interactive input.");
+                    map = GetMap();
+                    routes = GetDistances((uint)map.GetLength(0));
+                }
+            }
+            else
+            {
+                map = GetMap();
+                routes = GetDistances((uint)map.GetLength(0));
+            }
 
             Controller = new MapController(map, routes);
 
@@ -180,8 +203,6 @@ namespace CityDistanceCalculator
 
         private static void ViewMap(uint[,] map, uint mapSize)
         {
-            Console.Clear();
-
             if (map == null)
             {
                 Console.Write("Null array.");
@@ -206,7 +227,35 @@ namespace CityDistanceCalculator
 
 
             sb.Append(Environment.NewLine);
-            PrintHeader();
+            Console.Write(sb.ToString());
+        }
+
+        private static void ViewRoutes(uint[] map)
+        {
+            if (map == null)
+            {
+                Console.Write("Null array.");
+
+                return;
+            }
+
+            StringBuilder sb = new();
+
+            sb.Append("[");
+
+            foreach (var city in map)
+            {
+                sb.Append($"{city}, ");
+            }
+
+            sb.Append(";");
+
+            sb.Replace(", ;", "");
+
+            sb.Append("]");
+
+            sb.Append(Environment.NewLine);
+            sb.Append(Environment.NewLine);
             Console.Write(sb.ToString());
         }
 

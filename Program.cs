@@ -4,7 +4,7 @@
     {
         static void Main(string[] args)
         {
-            MapConsoleView.Run();
+            MapConsoleView.Run(true);
         }
     }
 }
