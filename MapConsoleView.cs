@@ -91,9 +91,9 @@ namespace CityDistanceCalculator
             {
                 try
                 {
-                    map = FileReader.GetMapFromDesktop("matriz.txt");
+                    map = FileReader.GetMapFromDesktopCSVHelper("matriz.txt");
                     ViewMap(map, (uint)map.GetLength(0));
-                    routes = FileReader.GetRoutesFromDesktop("caminho.txt");
+                    routes = FileReader.GetRoutesFromDesktopCSVHelper("caminho.txt");
                     ViewRoutes(routes);
                 }
                 catch (Exception e)
