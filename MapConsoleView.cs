@@ -1,17 +1,27 @@
 ﻿using System.Globalization;
+using System.Text;
 
 namespace CityDistanceCalculator
 {
-    public class MapConsoleView : IView
+    public class MapConsoleView
     {
-        public MapController Controller { get; private set; }
+        private static MapController? Controller { get; set; }
 
-        public MapConsoleView()
+        public static void PrintHeader()
         {
-            this.Controller = new MapController(GetCities());
+            Console.Write("-------------------------------------------------\n");
+            Console.Write("Welcome to the CS City Distance Calculator! \n");
+            Console.WriteLine("-------------------------------------------------\n");
         }
 
-        public static int GetNextCityFromInput(int numberOfCities)
+        public static void PrintFooter()
+        {
+            Console.Write("\n-------------------------------------------------\n");
+            Console.Write("Thanks!\n");
+            Console.Write("-------------------------------------------------\n");
+        }
+
+        private static int GetNextCityFromInput(uint numberOfCities)
         {
             int validInput;
 
@@ -41,9 +51,9 @@ namespace CityDistanceCalculator
             return validInput;
         }
 
-        public static int GetDistanceFromInput(int origin, int destination)
+        private static uint GetDistanceFromInput(uint origin, uint destination)
         {
-            int distance;
+            uint distance;
 
             bool isInputInteger;
             bool isValidDistance;
@@ -51,7 +61,7 @@ namespace CityDistanceCalculator
             do
             {
                 Console.Write($"Distance from {origin} to {destination} in Km: ");
-                isValidDistance = isInputInteger = int.TryParse(Console.ReadLine()!.Replace(",", "."), NumberStyles.Integer, CultureInfo.InvariantCulture, out distance);
+                isValidDistance = isInputInteger = uint.TryParse(Console.ReadLine()!.Replace(",", "."), NumberStyles.Integer, CultureInfo.InvariantCulture, out distance);
 
                 if (!isInputInteger)
                 {
@@ -70,17 +80,23 @@ namespace CityDistanceCalculator
             return distance;
         }
 
-        public void Run()
+        public static void Run()
         {
-            ViewMap();
-            GetMap();
-            ViewMap();
+            PrintHeader();
+
+            uint[,] map = GetMap();
+            uint[] routes = GetDistances((uint)map.GetLength(0));
+
+            Controller = new MapController(map, routes);
+
             ViewDistance();
+
+            PrintFooter();
         }
 
-        public int GetCities()
+        private static uint GetMapSize()
         {
-            int numberOfCities;
+            uint numberOfCities;
 
             bool isInputInteger;
             bool isValidNumberOfCities;
@@ -88,7 +104,7 @@ namespace CityDistanceCalculator
             do
             {
                 Console.Write($"How many cities in the map (2 or more)? ");
-                isValidNumberOfCities = isInputInteger = int.TryParse(Console.ReadLine()!.Replace(",", "."), NumberStyles.Integer, CultureInfo.InvariantCulture, out numberOfCities);
+                isValidNumberOfCities = isInputInteger = uint.TryParse(Console.ReadLine()!.Replace(",", "."), NumberStyles.Integer, CultureInfo.InvariantCulture, out numberOfCities);
 
                 if (!isInputInteger)
                 {
@@ -108,36 +124,43 @@ namespace CityDistanceCalculator
             return numberOfCities;
         }
 
-        public void GetMap()
+        private static uint[,] GetMap()
         {
-            Console.Clear();
-            for (int i = 0; i < Controller.GetMap().Distances2D.GetLength(0); i++)
+            uint mapSize = GetMapSize();
+
+            uint[,] map = new uint[mapSize, mapSize];
+
+            ViewMap(map, mapSize);
+
+            for (var i = 0; i < mapSize; i++)
             {
-                for (int j = 0; j < Controller.GetMap().Distances2D.GetLength(1); j++)
+                for (var j = 0; j < mapSize; j++)
                 {
                     if (i <= j)
                     {
                         continue;
                     }
 
-                    Controller.GetMap().Distances2D[i, j] = Controller.GetMap().Distances2D[j, i] = GetDistanceFromInput(i + 1, j + 1);
-                    ViewMap();
+                    map[i, j] = map[j, i] = GetDistanceFromInput((uint)i + 1, (uint)j + 1);
+                    ViewMap(map, mapSize);
                 }
             }
+
+            return map;
         }
 
-        public int[] GetDistances()
+        private static uint[] GetDistances(uint mapSize)
         {
-            List<int> route = new();
+            List<uint> route = new();
             int userInput;
 
             do
             {
-                userInput = GetNextCityFromInput(Controller.GetMap().Distances2D.GetLength(0)); ;
+                userInput = GetNextCityFromInput(mapSize); ;
 
                 if (userInput > 0)
                 {
-                    route.Add(userInput);
+                    route.Add((uint)userInput);
                     Console.WriteLine($"Route: [{string.Join(", ", route.ToArray())}]");
                 }
 
@@ -146,7 +169,7 @@ namespace CityDistanceCalculator
                     if (route.Count == 0)
                     {
                         Console.WriteLine("No integer input was provided. Execution halted.");
-                        return Enumerable.Empty<int>().ToArray();
+                        return Enumerable.Empty<uint>().ToArray();
                     }
                 }
             }
@@ -155,15 +178,48 @@ namespace CityDistanceCalculator
             return route.ToArray();
         }
 
-        public void ViewMap()
+        private static void ViewMap(uint[,] map, uint mapSize)
         {
             Console.Clear();
-            Console.Write(Controller.GetMap());
+
+            if (map == null)
+            {
+                Console.Write("Null array.");
+
+                return;
+            }
+
+            StringBuilder sb = new();
+
+            sb.AppendLine($"{new string(' ', 5)}{string.Join(new string(' ', 4), Enumerable.Range(1, (int)mapSize))}");
+
+            for (var i = 0; i < mapSize; i++)
+            {
+                sb.Append($" {i + 1} ");
+                for (var j = 0; j < mapSize; j++)
+                {
+                    sb.Append($" {map[i, j]: 00} ");
+                }
+                sb.Append(Environment.NewLine);
+                sb.Append(Environment.NewLine);
+            }
+
+
+            sb.Append(Environment.NewLine);
+            PrintHeader();
+            Console.Write(sb.ToString());
         }
 
-        public void ViewDistance()
+        private static void ViewDistance()
         {
-            Console.WriteLine($"Total distance: {Controller.CalculateDistance(GetDistances())}");
+            if (Controller == null)
+            {
+                Console.WriteLine($"Total distance: Unavailable.");
+
+                return;
+            }
+
+            Console.WriteLine($"Total distance: {Controller.GetTotalDistance()}km");
         }
     }
 }

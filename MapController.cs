@@ -2,43 +2,51 @@
 {
     public class MapController
     {
-        private MapModel Map;
+        private uint[,]? DistancesMap2D { get; set; }
 
-        public MapController(int mapSize)
+        private uint[]? Routes { get; set; }
+
+        public MapController(uint[,] map, uint[] routes)
         {
-            this.Map = new MapModel(mapSize);
+            DistancesMap2D = map;
+            Routes = routes;
         }
 
-        public MapModel GetMap()
+        public uint GetTotalDistance()
         {
-            return this.Map;
-        }
-
-        public int CalculateDistance(int[] routes)
-        {
-            if (routes.Length < 2)
+            if (Routes == null)
             {
                 return default;
             }
 
-            int distance = default;
-
-            for (int i = 0; i < (routes.Length - 1); i++)
+            if (Routes.Length < 2)
             {
-                distance += GetDistance(routes[i], routes[i + 1]);
+                return default;
+            }
+
+            uint distance = default;
+
+            for (var i = 0; i < (Routes.Length - 1); i++)
+            {
+                distance += GetSegmentDistance(Routes[i], Routes[i + 1]);
             }
 
             return distance;
         }
 
-        private int GetDistance(int origin, int destination)
+        private uint GetSegmentDistance(uint origin, uint destination)
         {
-            if (origin > (int)Map.Distances2D.GetLength(0)
-                || destination > (int)Map.Distances2D.GetLength(1)
+            if (DistancesMap2D == null)
+            {
+                return default;
+            }
+
+            if (origin > DistancesMap2D.GetLength(0)
+                || destination > DistancesMap2D.GetLength(1)
                 || origin < 0
                 || destination < 0)
             {
-                throw new InvalidDataException($"{ConsoleViewMessages.PtBr["InvalidDataException"]}");
+                throw new InvalidDataException($"Error getting distance. Invalid origin or destination data.");
             }
 
             if (origin == destination)
@@ -48,24 +56,29 @@
 
             if (origin < destination)
             {
-                return this.Map.Distances2D[destination - 1, origin - 1];
+                return DistancesMap2D[destination - 1, origin - 1];
             }
 
-            return this.Map.Distances2D[origin - 1, destination - 1]; ;
+            return DistancesMap2D[origin - 1, destination - 1]; ;
         }
 
         public void FillLowerMatrix()
         {
-            for (int i = 0; i < Map.Distances2D.GetLength(0); i++)
+            if (DistancesMap2D == null)
             {
-                for (int j = 0; j < Map.Distances2D.GetLength(1); j++)
+                return;
+            }
+
+            for (var i = 0; i < DistancesMap2D.GetLength(0); i++)
+            {
+                for (var j = 0; j < DistancesMap2D.GetLength(1); j++)
                 {
                     if (i <= j)
                     {
                         continue;
                     }
 
-                    Map.Distances2D[i, j] = (int)new Random().Next(30);
+                    DistancesMap2D[i, j] = (uint)new Random().Next(30);
                 }
             }
         }
