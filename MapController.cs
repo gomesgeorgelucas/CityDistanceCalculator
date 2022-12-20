@@ -46,7 +46,8 @@
                 || origin < 0
                 || destination < 0)
             {
-                throw new InvalidDataException($"Error getting distance. Invalid origin or destination data.");
+                Console.WriteLine($"Error getting distance. Invalid origin or destination data.");
+                return default;
             }
 
             if (origin == destination)
@@ -62,6 +63,9 @@
             return DistancesMap2D[origin - 1, destination - 1]; ;
         }
 
+        /// <summary>
+        /// Fills lower matrix with random values.
+        /// </summary>
         public void FillLowerMatrix()
         {
             if (DistancesMap2D == null)
