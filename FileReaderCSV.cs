@@ -4,9 +4,9 @@ using System.Globalization;
 
 namespace CityDistanceCalculator
 {
-    public static class FileReaderCSV
+    partial class FileReader
     {
-        public static uint[,] GetMapFromDesktopCSVHelper(this FileReader fileReader, string fileName)
+        public static uint[,] GetMapFromDesktopCSVHelper(string fileName)
         {
             string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             string fullName = System.IO.Path.Combine(desktopPath, fileName);
@@ -47,7 +47,7 @@ namespace CityDistanceCalculator
             return map;
         }
 
-        public static uint[] GetRoutesFromDesktopCSVHelper(this FileReader fileReader, string fileName)
+        public static uint[] GetRoutesFromDesktopCSVHelper(string fileName)
         {
             string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             string fullName = System.IO.Path.Combine(desktopPath, fileName);

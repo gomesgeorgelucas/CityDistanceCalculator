@@ -1,6 +1,6 @@
 ﻿namespace CityDistanceCalculator
 {
-    public class FileReader
+    partial class FileReader
     {
         public static uint[,] GetMapFromDesktop(string fileName)
         {
