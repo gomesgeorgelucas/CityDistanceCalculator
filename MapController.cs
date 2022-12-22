@@ -17,6 +17,16 @@
                 throw new ArgumentException("Map needs to have two cities or more.");
             }
 
+            if (routes == null)
+            {
+                throw new ArgumentNullException(nameof(routes));
+            }
+
+            if (routes.Length < 2)
+            {
+                throw new ArgumentException("Routes needs to have two cities or more.");
+            }
+
             DistancesMap2D = map;
             Routes = routes;
         }
