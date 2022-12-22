@@ -25,26 +25,28 @@ namespace CityDistanceCalculator
             using var reader = new StreamReader(fullName);
             using var csv = new CsvParser(reader, config);
 
-            List<uint[]> distances = new();
+            csv.Read();
 
-            while (csv.Read())
+            int size = csv.Record!.Length;
+
+            uint[,] distances = new uint[size, size];
+
+            var line = 0;
+
+            do
             {
-                distances.Add(csv.Record!.Select(s => uint.Parse(s)).ToArray());
-            }
+                uint[] lineAsArray = csv.Record!.Select(s => uint.Parse(s)).ToArray();
 
-            uint[][] jaggedMap = distances.ToArray();
-
-            uint[,] map = new uint[distances.Count, distances.Count];
-
-            for (var line = 0; line < distances.Count; line++)
-            {
-                for (var column = 0; column < distances.Count; column++)
+                for (var column = 0; column < size; column++)
                 {
-                    map[line, column] = jaggedMap[line][column];
+                    distances[line, column] = lineAsArray[column];
                 }
-            }
 
-            return map;
+                line++;
+            }
+            while (csv.Read());
+
+            return distances;
         }
 
         public static uint[] GetRoutesFromDesktopCSVHelper(string fileName)
