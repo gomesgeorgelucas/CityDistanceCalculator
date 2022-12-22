@@ -19,10 +19,9 @@
             {
                 fileContent = System.IO.File.ReadAllLines(fullName);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Console.WriteLine("Error reading file.");
-                Console.WriteLine(e);
                 fileContent = Array.Empty<string>();
             }
 
@@ -42,11 +41,21 @@
                 try
                 {
                     lineAsUIntegerArray = fileContent[line].Replace(" ", "").Split(",").Select(s => uint.Parse(s)).ToArray();
+
+                    if (lineAsUIntegerArray.Length < mapSize)
+                    {
+                        Console.WriteLine("Error reading line. The map is not square.");
+                        lineAsUIntegerArray = lineAsUIntegerArray = new uint[mapSize];
+                    }
+
+                    if (lineAsUIntegerArray.Length > mapSize)
+                    {
+                        Console.WriteLine($"Error reading line. The map is not square. Ignoring exceding values on line {line + 1}.");
+                    }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     Console.WriteLine("Error reading line. Invalid values?");
-                    Console.WriteLine(e);
                     lineAsUIntegerArray = new uint[mapSize];
                 }
 
@@ -77,10 +86,9 @@
             {
                 fileContent = System.IO.File.ReadAllLines(fullName);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Console.WriteLine("Error reading file.");
-                Console.WriteLine(e);
                 fileContent = Array.Empty<string>();
             }
 
@@ -98,10 +106,9 @@
             {
                 lineAsUIntegerArray = fileContent[0].Replace(" ", "").Split(",").Select(s => uint.Parse(s)).ToArray();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Console.WriteLine("Error reading line. Invalid values?");
-                Console.WriteLine(e);
                 lineAsUIntegerArray = Array.Empty<uint>();
             }
 
