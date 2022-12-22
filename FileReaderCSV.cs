@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace CityDistanceCalculator
 {
-    partial class FileReader
+    sealed partial class FileReader
     {
         public static uint[,] GetMapFromDesktopCSVHelper(string fileName)
         {

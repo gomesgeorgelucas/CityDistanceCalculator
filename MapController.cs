@@ -1,13 +1,22 @@
 ﻿namespace CityDistanceCalculator
 {
-    public class MapController
+    public sealed class MapController
     {
-        private uint[,]? DistancesMap2D { get; set; }
-
-        private uint[]? Routes { get; set; }
+        private uint[,]? DistancesMap2D { get; init; } = new uint[0, 0];
+        private uint[]? Routes { get; init; } = Array.Empty<uint>();
 
         public MapController(uint[,] map, uint[] routes)
         {
+            if (map == null)
+            {
+                throw new ArgumentNullException(nameof(map));
+            }
+
+            if (map.Length < 4)
+            {
+                throw new ArgumentException("Map needs to have two cities or more.");
+            }
+
             DistancesMap2D = map;
             Routes = routes;
         }
@@ -65,6 +74,7 @@
 
         /// <summary>
         /// Fills lower matrix with random values.
+        /// Only used for testing purposes.
         /// </summary>
         public void FillLowerMatrix()
         {

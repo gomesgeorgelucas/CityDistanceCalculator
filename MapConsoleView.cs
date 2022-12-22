@@ -3,18 +3,18 @@ using System.Text;
 
 namespace CityDistanceCalculator
 {
-    public class MapConsoleView
+    public sealed class MapConsoleView
     {
         private static MapController? Controller { get; set; }
 
-        public static void PrintHeader()
+        private static void PrintHeader()
         {
             Console.Write("-------------------------------------------------\n");
             Console.Write("Welcome to the CS City Distance Calculator! \n");
             Console.WriteLine("-------------------------------------------------\n");
         }
 
-        public static void PrintFooter()
+        private static void PrintFooter()
         {
             Console.Write("\n-------------------------------------------------\n");
             Console.Write("Thanks!\n");
@@ -91,17 +91,23 @@ namespace CityDistanceCalculator
             {
                 try
                 {
-
                     map = FileReader.GetMapFromDesktopCSVHelper("matriz.txt");
                     ViewMap(map, (uint)map.GetLength(0));
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Error gettin map from file, switching to interactive input.");
+                    map = GetMap();
+                }
+
+                try
+                {
                     routes = FileReader.GetRoutesFromDesktopCSVHelper("caminho.txt");
                     ViewRoutes(routes);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    Console.WriteLine(e);
-                    Console.WriteLine("Error gettin map or routes from file, switching to interactive input.");
-                    map = GetMap();
+                    Console.WriteLine("Error gettin routes from file, switching to interactive input.");
                     routes = GetDistances((uint)map.GetLength(0));
                 }
             }
@@ -127,7 +133,7 @@ namespace CityDistanceCalculator
 
             do
             {
-                Console.Write($"How many cities in the map (2 or more)? ");
+                Console.Write("How many cities in the map (2 or more)? ");
                 isValidNumberOfCities = isInputInteger = uint.TryParse(Console.ReadLine()!.Replace(",", "."), NumberStyles.Integer, CultureInfo.InvariantCulture, out numberOfCities);
 
                 if (!isInputInteger)
@@ -242,18 +248,18 @@ namespace CityDistanceCalculator
 
             StringBuilder sb = new();
 
-            sb.Append("[");
+            sb.Append('[');
 
             foreach (var city in map)
             {
                 sb.Append($"{city}, ");
             }
 
-            sb.Append(";");
+            sb.Append(';');
 
             sb.Replace(", ;", "");
 
-            sb.Append("]");
+            sb.Append(']');
 
             sb.Append(Environment.NewLine);
             sb.Append(Environment.NewLine);
@@ -264,7 +270,7 @@ namespace CityDistanceCalculator
         {
             if (Controller == null)
             {
-                Console.WriteLine($"Total distance: Unavailable.");
+                Console.WriteLine("Total distance: Unavailable.");
 
                 return;
             }

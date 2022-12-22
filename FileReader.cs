@@ -1,6 +1,6 @@
 ﻿namespace CityDistanceCalculator
 {
-    partial class FileReader
+    sealed partial class FileReader
     {
         public static uint[,] GetMapFromDesktop(string fileName)
         {
@@ -76,10 +76,9 @@
             {
                 fileContent = System.IO.File.ReadAllLines(fullName);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Console.WriteLine("Error reading file.");
-                Console.WriteLine(e);
                 fileContent = Array.Empty<string>();
             }
 
@@ -97,10 +96,9 @@
             {
                 lineAsUIntegerArray = fileContent[0].Replace(" ", "").Split(",").Select(s => uint.Parse(s)).ToArray();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Console.WriteLine("Error reading line. Invalid values?");
-                Console.WriteLine(e);
                 lineAsUIntegerArray = Array.Empty<uint>();
             }
 
